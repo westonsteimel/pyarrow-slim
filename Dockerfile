@@ -3,6 +3,7 @@ FROM python:3-slim
 RUN apt update \
     && apt install \
     zip \
+    pcregrep \
     bash
 
 WORKDIR /build

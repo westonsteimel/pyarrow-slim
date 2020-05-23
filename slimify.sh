@@ -8,22 +8,25 @@ mkdir -p dist
 
 (
     cd dist
-    pip_pyarrow_package="pyarrow"
 
-    if [[ -n "${PYARROW_VERSION}" ]]; then
-        pip_pyarrow_package="pyarrow==${PYARROW_VERSION}"
+    if [[ -z "${PYARROW_VERSION}" ]]; then
+        PYARROW_VERSION=$(pip search pyarrow | pcregrep -o1 -e ".*\((.*)\).*")
     fi
 
+    echo "slimming wheels for pyarrow version ${PYARROW_VERSION}"
     
-    $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux2014_x86_64 $pip_pyarrow_package
-    $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux2014_x86_64 $pip_pyarrow_package
-    $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux2014_x86_64 $pip_pyarrow_package
-    $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux2010_x86_64 $pip_pyarrow_package
-    $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux2010_x86_64 $pip_pyarrow_package
-    $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux2010_x86_64 $pip_pyarrow_package
-    $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux1_x86_64 $pip_pyarrow_package
-    $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux1_x86_64 $pip_pyarrow_package
-    $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux1_x86_64 $pip_pyarrow_package
+    $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.5 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION} 
+    $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.5 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux1_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux1_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux1_x86_64 pyarrow==${PYARROW_VERSION}
+    $PIP_DOWNLOAD_CMD --python-version 3.5 --platform manylinux1_x86_64 pyarrow==${PYARROW_VERSION}
 
     for filename in ./*.whl
     do
@@ -43,12 +46,11 @@ mkdir -p dist
             \*hdfs\* \
             \*liba\*.so
 
-        mkdir -p pyarrow
-        unzip -c "${filename}" pyarrow/__init__.py | sed -e 's/import pyarrow.hdfs as hdfs//g' -e 's/from pyarrow.hdfs import HadoopFileSystem//g' | > ./pyarrow/__init__.py
+        wheel unpack $filename
+        sed -i -e 's/import pyarrow.hdfs as hdfs//g' -e 's/from pyarrow.hdfs import HadoopFileSystem//g' pyarrow-${PYARROW_VERSION}/pyarrow/__init__.py
+        wheel pack pyarrow-${PYARROW_VERSION}
 
-        zip -u "${filename}" ./pyarrow/__init__.py
-
-        rm -r pyarrow
+        rm -r pyarrow-${PYARROW_VERSION}
     done
 
     pip uninstall -y --disable-pip-version-check pyarrow
@@ -58,5 +60,9 @@ mkdir -p dist
 import pyarrow
 import pyarrow.parquet
 import pyarrow.feather
+import importlib
+
+module = importlib.import_module('pyarrow')
+print(module.__version__)
 "
 )
