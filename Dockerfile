@@ -1,9 +1,10 @@
 FROM python:3-slim
 
 RUN apt update \
-    && apt install \
+    && apt install -y \
     zip \
     pcregrep \
+    binutils \
     bash
 
 WORKDIR /build
