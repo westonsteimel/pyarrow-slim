@@ -10,7 +10,7 @@ mkdir -p dist
     cd dist
 
     if [[ -z "${PYARROW_VERSION}" ]]; then
-        PYARROW_VERSION=$(pip search pyarrow | pcregrep -o1 -e ".*\((.*)\).*")
+        PYARROW_VERSION=$(pip search pyarrow | pcregrep -o1 -e "^pyarrow \((.*)\).*$")
     fi
 
     echo "slimming wheels for pyarrow version ${PYARROW_VERSION}"
