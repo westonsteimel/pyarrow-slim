@@ -2,8 +2,6 @@
 
 set -e
 
-pip install -U pip==20.2.4
-
 PIP_DOWNLOAD_CMD="pip download --no-deps --disable-pip-version-check"
 
 mkdir -p dist
@@ -58,7 +56,6 @@ mkdir -p dist
         --disable-pip-version-check pyarrow==${PYARROW_VERSION} \
         -f . \
         --index-url https://westonsteimel.github.io/pypi-repo \
-        --extra-index-url https://pypi.org/pypi
 
     python -c "
 import pyarrow
