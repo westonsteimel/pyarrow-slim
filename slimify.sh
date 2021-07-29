@@ -44,7 +44,13 @@ mkdir -p dist
             
 
         wheel unpack $filename
-        sed -i -e 's/import pyarrow.hdfs as hdfs//g' -e 's/from pyarrow.hdfs import HadoopFileSystem as _HadoopFileSystem//g' -e 's/"HadoopFileSystem": (_HadoopFileSystem, "HadoopFileSystem"),//g' pyarrow-${PYARROW_VERSION}/pyarrow/__init__.py
+        sed -i \
+            -e 's/from pyarrow._hdfsio import HdfsFile, have_libhdfs//g' \
+            -e 's/import pyarrow.hdfs as hdfs//g' \
+            -e 's/from pyarrow.hdfs import HadoopFileSystem as _HadoopFileSystem//g' \
+            -e 's/"HadoopFileSystem": (_HadoopFileSystem, "HadoopFileSystem"),//g' \
+            -e 's/HadoopFileSystem = _HadoopFileSystem//g' \
+            pyarrow-${PYARROW_VERSION}/pyarrow/__init__.py
         strip pyarrow-${PYARROW_VERSION}/pyarrow/*.so
         strip pyarrow-${PYARROW_VERSION}/pyarrow/*.so.*
         wheel pack pyarrow-${PYARROW_VERSION}
