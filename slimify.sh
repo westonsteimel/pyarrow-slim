@@ -15,18 +15,27 @@ mkdir -p dist
     fi
 
     echo "slimming wheels for pyarrow version ${PYARROW_VERSION}"
-    
-    $PIP_DOWNLOAD_CMD --python-version 3.10 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
-    $PIP_DOWNLOAD_CMD --python-version 3.9 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
-    $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
-    $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
-    $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
 
-    $PIP_DOWNLOAD_CMD --python-version 3.10 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
-    $PIP_DOWNLOAD_CMD --python-version 3.9 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
-    $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
-    $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
-    $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+    if [ $TARGETPLATFORM == "linux/amd64" ]; then
+        $PIP_DOWNLOAD_CMD --python-version 3.10 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.9 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux2014_x86_64 pyarrow==${PYARROW_VERSION}
+
+        $PIP_DOWNLOAD_CMD --python-version 3.10 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.9 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.6 --platform manylinux2010_x86_64 pyarrow==${PYARROW_VERSION}
+    elif [ $TARGETPLATFORM == "linux/aarch64" ]; then
+        $PIP_DOWNLOAD_CMD --python-version 3.10 --platform manylinux2014_aarch64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.9 --platform manylinux2014_aarch64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.8 --platform manylinux2014_aarch64 pyarrow==${PYARROW_VERSION}
+        $PIP_DOWNLOAD_CMD --python-version 3.7 --platform manylinux2014_aarch64 pyarrow==${PYARROW_VERSION}
+    else
+        echo "${TARGETPLATFORM} not currently supported."
+    fi 
 
     for filename in ./*.whl
     do
